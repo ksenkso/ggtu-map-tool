@@ -1,0 +1,11 @@
+{
+  "name": "ggtu-map-tools",
+  "version": "1.0.0",
+  "dependencies": {
+    "cheerio": "^1.0.0-rc.2",
+    "commander": "latest"
+  },
+  "bin": {
+    "ggtu-mt": "./cli.js"
+  }
+}
