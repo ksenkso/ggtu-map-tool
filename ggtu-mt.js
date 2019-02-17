@@ -69,7 +69,7 @@ program
                         $(area).parent().prepend($(area));
                     });
                     // Replace data-name with corresponding data-type
-                    $('#area, #place, #transition-view, #walls').each((i, el) => {
+                    $('#area, #place, #transition-view, #walls, #door').each((i, el) => {
                         const $el = $(el);
                         $el.attr('data-type', $el.attr('id'));
                     });
@@ -132,7 +132,7 @@ program
                         }
                     }
                     // Write the transformed map to the output file
-                    fs.writeFile(outputPath, $('body').html(), null, (err) => {
+                    fs.writeFile(outputPath, $svg.parent().html(), null, (err) => {
                         if (!err) {
                             console.log('Готово!');
                         } else {
