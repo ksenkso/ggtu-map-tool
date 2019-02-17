@@ -1,6 +1,10 @@
+:root {
+    --inner-wall: 0.3;
+    --outer-wall: calc(var(--inner-wall) * 2);
+}
 svg * {
     stroke: #899494;
-    stroke-width: 2;
+    stroke-width: var(--inner-wall);
     fill: none;
 }
 [data-type=door], [data-type=area] {
@@ -10,16 +14,16 @@ svg * {
     pointer-events: all;
 }
 #perimeter * {
-    stroke-width: 4;
+    stroke-width: var(--outer-wall);
     fill: #f3f3f3;
 }
 [data-type=place] [data-type=walls],
 [data-type="transition-view"] *,
 [data-type] line {
-    stroke-width: 2;
+    stroke-width: var(--inner-wall);
 }
 [data-type="transition-view"] * {
-    stroke-width: 2;
+    stroke-width: var(--inner-wall);
 }
 [data-type=place] [data-type=area],
 [data-type=building] [data-type=area],
