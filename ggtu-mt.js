@@ -78,18 +78,21 @@ program
                             'data-name': null
                         });
                     });
-                    // Write the output to the same file
+                    // compute the output path
                     let outputPath;
                     if (program.output) {
                         outputPath = path.resolve(process.cwd(), program.output);
                     } else {
                         outputPath = path.resolve(process.cwd(), path.basename(fullPath, '.svg') + '.transformed.svg');
                     }
+                    // transform coordinates (scale position attributes and translations through transform)
                     const $svg = $('svg');
                     const oldViewBox = $svg.attr('viewBox').split(' ').map(v => +v);
                     const newViewBox = [0, 0, 1000, 1000];
                     $svg.attr('viewBox', newViewBox.join(' '));
+                    // Get the scale ratio
                     const ratio = Math.min(newViewBox[2] / oldViewBox[2], newViewBox[3]/ oldViewBox[3]);
+                    // For all rects, lines and polygons/polylines update their positions and translations
                     $('rect').each((i, rect) => {
                         const $rect = $(rect);
                         applyTranslate($rect, ratio);
@@ -126,6 +129,7 @@ program
                             console.log('Превью создано: ' + dirPath);
                         }
                     }
+                    // Write the transformed map to the output file
                     fs.writeFile(outputPath, $('body').html(), null, (err) => {
                         if (!err) {
                             console.log('Готово!');
