@@ -62,6 +62,8 @@ program
                     console.error(err);
                 } else {
                     const $ = cheerio.load(data);
+                    // Remove `defs element to clean styles
+                    $('defs').remove();
                     // Move areas to the back
                     $('#area, [data-name="area"]').each((i, area) => {
                         $(area).parent().prepend($(area));

@@ -1,5 +1,5 @@
 svg * {
-    stroke: #4d1e08;
+    stroke: #899494;
     stroke-width: 2;
     fill: none;
 }
@@ -11,6 +11,7 @@ svg * {
 }
 #perimeter * {
     stroke-width: 4;
+    fill: #f3f3f3;
 }
 [data-type=place] [data-type=walls],
 [data-type="transition-view"] *,
