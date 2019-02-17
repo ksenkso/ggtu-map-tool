@@ -1,3 +1,34 @@
-[data-type=place] [data-type=walls] {
-    stroke-width: 1;
+svg * {
+    stroke: #4d1e08;
+    stroke-width: 2;
+    fill: none;
+}
+[data-type=door], [data-type=area] {
+    stroke: none;
+}
+[data-type] {
+    pointer-events: all;
+}
+#perimeter * {
+    stroke-width: 4;
+}
+[data-type=place] [data-type=walls],
+[data-type="transition-view"] *,
+[data-type] line {
+    stroke-width: 2;
+}
+[data-type="transition-view"] * {
+    stroke-width: 2;
+}
+[data-type=place] [data-type=area],
+[data-type=building] [data-type=area],
+[data-type="transition-view"] rect
+{
+    fill: transparent;
+    transition: fill .1s ease-in-out
+}
+[data-type=place]:hover [data-type=area],
+[data-type=building]:hover [data-type=area],
+[data-type="transition-view"]:hover rect {
+    fill: #b1e1d4;
 }
