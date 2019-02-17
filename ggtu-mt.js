@@ -67,25 +67,9 @@ program
                         $(area).parent().prepend($(area));
                     });
                     // Replace data-name with corresponding data-type
-                    $('#area').attr({
-                        'data-type': 'area',
-                        'data-name': null
-                    });
-                    $('#place').attr({
-                        'data-type': 'place',
-                        'data-name': null
-                    });
-                    $('#stairs').attr({
-                        'data-type': 'transition-view',
-                        'data-name': null
-                    });
-                    $('#exit').attr({
-                        'data-type': 'transition-view',
-                        'data-name': null
-                    });
-                    $('#walls').attr({
-                        'data-type': 'walls',
-                        'data-name': null
+                    $('#area, #place, #transition-view, #walls').each((i, el) => {
+                        const $el = $(el);
+                        $el.attr('data-type', $el.attr('id'));
                     });
                     $('[data-name]').each((i, item) => {
                         const $item = $(item);
