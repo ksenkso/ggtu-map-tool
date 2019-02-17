@@ -28,7 +28,7 @@ program
                     // transform coordinates (scale position attributes and translations through transform)
                     const $svg = $('svg');
                     const ratio = 1 / program.meter;
-                    transformViewBox($svg);
+                    transformViewBox($svg, ratio);
                     transformCoords($, ratio);
                     createPreviewIfNeeded(outputPath, $svg);
                     // Write the transformed map to the output file
@@ -101,8 +101,10 @@ function getOutputPath(fullPath) {
  */
 function transformViewBox($svg, ratio) {
     const oldViewBox = $svg.attr('viewBox').split(' ').map(v => +v);
+    console.log(oldViewBox);
     // Get the scale ratio
     const newViewBox = oldViewBox.map(v => scale(v, ratio));
+    console.log(ratio);
     newViewBox[0] -= 0.6;
     newViewBox[1] -= 0.6;
     newViewBox[2] += 1.2;
@@ -204,6 +206,7 @@ function createPreview($svg, output, name) {
         const file = fs.readFileSync(path.resolve(__dirname, './preview-template.html'));
         const $preview = cheerio.load(file);
         $preview('body').append($svg);
+        $preview('title').text(name);
         fs.copyFileSync(path.resolve(__dirname, './style.css'), path.join(dirPath, 'style.css'));
         fs.writeFileSync(path.join(dirPath, 'preview.html'), $preview.html());
         return dirPath;
