@@ -7,6 +7,7 @@ const fs = require('fs');
 const program = require('commander');
 
 function scale(a, s) {
+    if (!a) return 0;
     return Math.round(a*s * 100) / 100;
 }
 
@@ -53,6 +54,7 @@ program
     .description('GGTU Map Tool')
     .option('-o, --output <path>', 'Output file path')
     .option('--preview', 'Create preview page for the map')
+    .option('-m, --meter <length>', 'Provide the length of one meter on this map')
     .arguments('<file>')
     .action((mapPath) => {
         const fullPath = path.resolve(process.cwd(), mapPath);
@@ -90,10 +92,14 @@ program
                     // transform coordinates (scale position attributes and translations through transform)
                     const $svg = $('svg');
                     const oldViewBox = $svg.attr('viewBox').split(' ').map(v => +v);
-                    const newViewBox = [0, 0, 1000, 1000];
-                    $svg.attr('viewBox', newViewBox.join(' '));
                     // Get the scale ratio
-                    const ratio = Math.min(newViewBox[2] / oldViewBox[2], newViewBox[3]/ oldViewBox[3]);
+                    const ratio = 1/program.meter;
+                    const newViewBox = oldViewBox.map(v => scale(v, ratio));
+                    newViewBox[0] -= 0.6;
+                    newViewBox[1] -= 0.6;
+                    newViewBox[2] += 1.2;
+                    newViewBox[3] += 1.2;
+                    $svg.attr('viewBox', newViewBox.join(' '));
                     // For all rects, lines and polygons/polylines update their positions and translations
                     $('rect').each((i, rect) => {
                         const $rect = $(rect);
@@ -122,7 +128,6 @@ program
                         const newPoints = oldPoints.map(p => scale(p, ratio)).join(' ');
                         $poly.attr('points', newPoints);
                     });
-                    $svg.attr('viewBox', '0 0 1000 1000');
                     if (program.preview) {
                         // Create a preview page;
                         const out = path.dirname(outputPath);
