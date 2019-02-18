@@ -4,7 +4,8 @@
   "dependencies": {
     "cheerio": "^1.0.0-rc.2",
     "commander": "latest",
-    "rimraf": "^2.6.3"
+    "rimraf": "^2.6.3",
+    "ggtu-map": "latest"
   },
   "bin": {
     "ggtu-mt": "ggtu-mt.js"

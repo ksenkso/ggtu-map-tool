@@ -6,6 +6,7 @@ const path = require('path');
 const fs = require('fs');
 const program = require('commander');
 
+
 program
     .version('0.0.1')
     .description('GGTU Map Tool')
@@ -101,10 +102,8 @@ function getOutputPath(fullPath) {
  */
 function transformViewBox($svg, ratio) {
     const oldViewBox = $svg.attr('viewBox').split(' ').map(v => +v);
-    console.log(oldViewBox);
     // Get the scale ratio
     const newViewBox = oldViewBox.map(v => scale(v, ratio));
-    console.log(ratio);
     newViewBox[0] -= 0.6;
     newViewBox[1] -= 0.6;
     newViewBox[2] += 1.2;
@@ -117,17 +116,18 @@ function transformViewBox($svg, ratio) {
  * @param $map
  */
 function cleanupMap($map) {
+    const types = ['area', 'place', 'transition-view', 'walls', 'door', 'building'];
     $map('defs').remove();
     // Move areas to the back
     $map('#area, [data-name="area"]').each((i, area) => {
         $map(area).parent().prepend($map(area));
     });
     // Replace data-name with corresponding data-type
-    $map('#area, #place, #transition-view, #walls, #door').each((i, el) => {
+    $map(types.map(type => '#'+type).join(', ')).each((i, el) => {
         const $el = $map(el);
         $el.attr('data-type', $el.attr('id'));
     });
-    $map('[data-name]').each((i, item) => {
+    $map(types.map(type => `[data-name="${type}"]`).join(', ')).each((i, item) => {
         const $item = $map(item);
         $item.attr({
             'data-type': $item.attr('data-name'),
@@ -207,7 +207,8 @@ function createPreview($svg, output, name) {
         const $preview = cheerio.load(file);
         $preview('body').append($svg);
         $preview('title').text(name);
-        fs.copyFileSync(path.resolve(__dirname, './style.css'), path.join(dirPath, 'style.css'));
+        // Fetch styles from the ggtu-map package
+        fs.copyFileSync(path.resolve(__dirname, './node_modules/ggtu-map/dist/main.css'), path.join(dirPath, 'style.css'));
         fs.writeFileSync(path.join(dirPath, 'preview.html'), $preview.html());
         return dirPath;
     } catch (e) {
