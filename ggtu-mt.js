@@ -205,7 +205,9 @@ function createPreview($svg, output, name) {
         fs.mkdirSync(dirPath);
         const file = fs.readFileSync(path.resolve(__dirname, './preview-template.html'));
         const $preview = cheerio.load(file);
-        $preview('body').append($svg);
+        const $copy = $svg.clone();
+        $copy.wrap('<div class="svg-pan-zoom_viewport"></div>');
+        $preview('body').append($copy);
         $preview('title').text(name);
         // Fetch styles from the ggtu-map package
         fs.copyFileSync(path.resolve(__dirname, './node_modules/ggtu-map/dist/main.css'), path.join(dirPath, 'style.css'));
