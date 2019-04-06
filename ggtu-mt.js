@@ -7,12 +7,15 @@ const fs = require('fs');
 const program = require('commander');
 
 
+
+
 program
     .version('0.0.1')
     .description('GGTU Map Tool')
     .option('-o, --output <path>', 'Output file path')
     .option('--preview', 'Create preview page for the map')
     .option('-m, --meter <length>', 'Provide the length of one meter on this map')
+    .option('--root', 'Processes file as a root location map')
     .arguments('<file>')
     .action((mapPath) => {
         const fullPath = path.resolve(process.cwd(), mapPath);
@@ -31,6 +34,9 @@ program
                     const ratio = 1 / program.meter;
                     transformViewBox($svg, ratio);
                     transformCoords($, ratio);
+                    if (program.root) {
+                        transformBuildings($);
+                    }
                     createPreviewIfNeeded(outputPath, $svg);
                     // Write the transformed map to the output file
                     fs.writeFile(outputPath, $svg.parent().html(), null, (err) => {
@@ -64,16 +70,19 @@ function scale(n, f) {
  * @param $el
  * @param {number} ratio
  */
-function applyTranslate($el, ratio) {
+function scaleTranslate($el, ratio) {
     const transform = $el.attr('transform');
     if (transform) {
-        const transforms = transform.split(') ').map(s => s + ')');
+        const transforms = transform.split(') ');//.map(s => s + ')');
+        for (let i = 0; i < transforms.length; i++) {
+            transforms[i] += ')';
+        }
         transforms[transforms.length - 1] = transforms[transforms.length - 1].slice(0, transforms[transforms.length - 1].length - 1);
         const newTransforms = transforms.map(trf => {
             const translation = trf.match(/translate\(([-0-9. ]+)\)/);
             if (translation) {
                 const [dx, dy] = translation[1].split(' ');
-                return `translate(${scale(dx, ratio)} ${scale(dy, ratio)})`;
+                return `translate(${scale(+dx, ratio)} ${scale(+dy, ratio)})`;
             } else {
                 return trf;
             }
@@ -81,6 +90,7 @@ function applyTranslate($el, ratio) {
         $el.attr('transform', newTransforms.join(' '));
     }
 }
+
 
 /**
  *
@@ -104,10 +114,10 @@ function transformViewBox($svg, ratio) {
     const oldViewBox = $svg.attr('viewBox').split(' ').map(v => +v);
     // Get the scale ratio
     const newViewBox = oldViewBox.map(v => scale(v, ratio));
-    newViewBox[0] -= 0.6;
+    /*newViewBox[0] -= 0.6;
     newViewBox[1] -= 0.6;
     newViewBox[2] += 1.2;
-    newViewBox[3] += 1.2;
+    newViewBox[3] += 1.2;*/
     $svg.attr('viewBox', newViewBox.join(' '));
 }
 
@@ -144,7 +154,7 @@ function cleanupMap($map) {
 function transformCoords($, ratio) {
     $('rect').each((i, rect) => {
         const $rect = $(rect);
-        applyTranslate($rect, ratio);
+        scaleTranslate($rect, ratio);
         $rect.attr({
             x: scale(+$rect.attr('x'), ratio),
             y: scale(+$rect.attr('y'), ratio),
@@ -154,7 +164,7 @@ function transformCoords($, ratio) {
     });
     $('line').each((i, line) => {
         const $line = $(line);
-        applyTranslate($line, ratio);
+        scaleTranslate($line, ratio);
         $line.attr({
             x1: scale(+$line.attr('x1'), ratio),
             y1: scale(+$line.attr('y1'), ratio),
@@ -164,7 +174,7 @@ function transformCoords($, ratio) {
     });
     $('polyline, polygon').each((i, poly) => {
         const $poly = $(poly);
-        applyTranslate($poly, ratio);
+        scaleTranslate($poly, ratio);
         const oldPoints = $poly.attr('points').split(' ').map(p => +p);
         const newPoints = oldPoints.map(p => scale(p, ratio)).join(' ');
         $poly.attr('points', newPoints);
@@ -218,4 +228,18 @@ function createPreview($svg, output, name) {
         return null;
     }
 
+}
+
+/**
+ *
+ * @param $
+ */
+function transformBuildings($) {
+    const $root = $('svg');
+    $('[data-type="transition-view"]').each((i, tv) => {
+        const $tv = $(tv);
+        const building = $tv.parent('[data-type=building]');
+        $tv.attr('data-target', building.attr('id'));
+        $root.prepend($tv);
+    });
 }
