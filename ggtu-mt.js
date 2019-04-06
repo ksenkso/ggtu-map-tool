@@ -7,8 +7,6 @@ const fs = require('fs');
 const program = require('commander');
 
 
-
-
 program
     .version('0.0.1')
     .description('GGTU Map Tool')
@@ -27,10 +25,14 @@ program
                     const $ = cheerio.load(data);
                     // Remove `defs element to clean styles
                     cleanupMap($);
+                    if (!program.meter) {
+                        program.meter = getMeterSize($);
+                    }
                     // compute the output path
                     let outputPath = getOutputPath(fullPath);
                     // transform coordinates (scale position attributes and translations through transform)
                     const $svg = $('svg');
+
                     const ratio = 1 / program.meter;
                     transformViewBox($svg, ratio);
                     transformCoords($, ratio);
@@ -62,7 +64,7 @@ program
  */
 function scale(n, f) {
     if (!n) return 0;
-    return Math.round(n*f * 100) / 100;
+    return Math.round(n * f * 100) / 100;
 }
 
 /**
@@ -91,6 +93,23 @@ function scaleTranslate($el, ratio) {
     }
 }
 
+/**
+ *
+ * @param $
+ * @return number
+ */
+function getMeterSize($) {
+    const meter = $('#meter');
+    if (meter) {
+        const line = meter.children(':first-child');
+        const x1 = line.attr('x1');
+        const x2 = line.attr('x2');
+        const y1 = line.attr('y1');
+        const y2 = line.attr('y2');
+        meter.remove();
+        return Math.sqrt((x2 - x1) ** 2 + (y1 - y2) ** 2);
+    }
+}
 
 /**
  *
@@ -133,7 +152,7 @@ function cleanupMap($map) {
         $map(area).parent().prepend($map(area));
     });
     // Replace data-name with corresponding data-type
-    $map(types.map(type => '#'+type).join(', ')).each((i, el) => {
+    $map(types.map(type => '#' + type).join(', ')).each((i, el) => {
         const $el = $map(el);
         $el.attr('data-type', $el.attr('id'));
     });
