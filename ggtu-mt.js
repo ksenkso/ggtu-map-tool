@@ -32,8 +32,8 @@ program
                     let outputPath = getOutputPath(fullPath);
                     // transform coordinates (scale position attributes and translations through transform)
                     const $svg = $('svg');
-
-                    const ratio = 1 / program.meter;
+                    const PNG_SCALE = 25;
+                    const ratio = (1 / program.meter) * PNG_SCALE;
                     transformViewBox($svg, ratio);
                     transformCoords($, ratio);
                     if (program.root) {
