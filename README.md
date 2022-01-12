@@ -11,10 +11,10 @@ GGTU Map Tool
 This is a CLI tool to mark up objects on an SVG map.
 
 Related repos:
+- [API Server](https://github.com/ksenkso/ggtu-map-api)
 - [Admin panel repo](https://github.com/ksenkso/ggtu-maps-admin)
 - [Map library (API client and renderer)](https://github.com/ksenkso/ggtu-map)
 - [Map client](https://github.com/ksenkso/ggtu-map-client)
-- [Map parsing tool](https://github.com/ksenkso/ggtu-map-tool)
 
 ## Usage
 
